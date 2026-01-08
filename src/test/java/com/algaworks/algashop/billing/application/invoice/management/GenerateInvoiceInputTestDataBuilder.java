@@ -1,6 +1,5 @@
 package com.algaworks.algashop.billing.application.invoice.management;
 
-import com.algaworks.algashop.billing.application.invoice.management.*;
 import com.algaworks.algashop.billing.domain.model.invoice.PaymentMethod;
 
 import java.math.BigDecimal;
