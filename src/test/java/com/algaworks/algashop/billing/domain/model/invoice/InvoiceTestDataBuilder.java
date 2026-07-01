@@ -1,9 +1,7 @@
 package com.algaworks.algashop.billing.domain.model.invoice;
 
 import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class InvoiceTestDataBuilder {
 
@@ -12,7 +10,7 @@ public class InvoiceTestDataBuilder {
     private Payer payer = aPayer();
     private PaymentMethod paymentMethod;
     private UUID creditCardId;
-    private Set<LineItem> items = new HashSet<>();
+    private List<LineItem> items = new ArrayList<>();
     private InvoiceStatus status = InvoiceStatus.UNPAID;
     private String gatewayCode;
     private String cancelReason = "Test cancel reason";
@@ -44,13 +42,13 @@ public class InvoiceTestDataBuilder {
         return invoice;
     }
 
-    public InvoiceTestDataBuilder items(Set<LineItem> items) {
+    public InvoiceTestDataBuilder items(List<LineItem> items) {
         this.items = items;
         return this;
     }
 
     public InvoiceTestDataBuilder items(LineItem... items) {
-        this.items = Set.of(items);
+        this.items = List.of(items);
         return this;
     }
 

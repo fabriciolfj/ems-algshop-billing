@@ -14,8 +14,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CreditCardManagementService {
 
-    private CreditCardRepository creditCardRepository;
-    private CreditCardProviderService creditCardProviderService;
+    private final CreditCardRepository creditCardRepository;
+    private final CreditCardProviderService creditCardProviderService;
 
     @Transactional
     public UUID register(TokenizedCreditCardInput input) {

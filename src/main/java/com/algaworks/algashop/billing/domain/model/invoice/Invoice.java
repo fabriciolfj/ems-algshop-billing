@@ -41,7 +41,7 @@ public class Invoice extends AbstractAuditableAggregateRoot<Invoice> {
     @ElementCollection
     @CollectionTable(name = "invoice_line_item",
             joinColumns = @JoinColumn(name = "invoice_id"))
-    private Set<LineItem> items = new HashSet<>();
+    private List<LineItem> items = new ArrayList<>();
 
     @Embedded
     private Payer payer;
@@ -51,7 +51,7 @@ public class Invoice extends AbstractAuditableAggregateRoot<Invoice> {
     public static Invoice issue(String orderId,
                                 UUID customerId,
                                 Payer payer,
-                                Set<LineItem> items) {
+                                List<LineItem> items) {
         Objects.requireNonNull(customerId);
         Objects.requireNonNull(payer);
         Objects.requireNonNull(items);
@@ -87,8 +87,8 @@ public class Invoice extends AbstractAuditableAggregateRoot<Invoice> {
         return invoice;
     }
 
-    public Set<LineItem> getItems() {
-        return Collections.unmodifiableSet(this.items);
+    public List<LineItem> getItems() {
+        return Collections.unmodifiableList(this.items);
     }
 
     public boolean isCanceled() {

@@ -11,9 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +29,7 @@ public class InvoiceManagementApplicationService {
         verifyCreditCardId(paymentSettings.getCreditCardId());
 
         Payer payer = convertToPayer(input.getPayer());
-        Set<LineItem> items = convertToLineItems(input.getItems());
+        List<LineItem> items = convertToLineItems(input.getItems());
 
         Invoice invoice = invoicingService.issue(input.getOrderId(), input.getCustomerId(), payer, items);
         invoice.changePaymentSettings(paymentSettings.getMethod(), paymentSettings.getCreditCardId());
@@ -71,8 +69,8 @@ public class InvoiceManagementApplicationService {
                 .build();
     }
 
-    private Set<LineItem> convertToLineItems(Set<LineItemInput> itemsInput) {
-        Set<LineItem> lineItems = new LinkedHashSet<>();
+    private List<LineItem> convertToLineItems(List<LineItemInput> itemsInput) {
+        List<LineItem> lineItems = new ArrayList<>();
         int itemNumber = 1;
         for (LineItemInput itemInput : itemsInput) {
             lineItems.add(LineItem.builder()

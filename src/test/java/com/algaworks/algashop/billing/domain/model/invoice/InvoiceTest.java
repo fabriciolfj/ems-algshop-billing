@@ -5,9 +5,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 class InvoiceTest {
 
@@ -43,7 +41,7 @@ class InvoiceTest {
         String orderId = "123";
         UUID customerId = UUID.randomUUID();
         Payer payer = InvoiceTestDataBuilder.aPayer();
-        Set<LineItem> items = new HashSet<>();
+        List<LineItem> items = new ArrayList<>();
         items.add(InvoiceTestDataBuilder.aLineItem());
         items.add(InvoiceTestDataBuilder.aLineItemAlt());
 
@@ -63,7 +61,7 @@ class InvoiceTest {
 
     @Test
     public void shouldThrowExceptionWhenIssuingInvoiceWithEmptyItems() {
-        Set<LineItem> emptyItems = new HashSet<>();
+        List<LineItem> emptyItems = new ArrayList<>();
         Assertions.assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> Invoice.issue("01226N0693HDA23",
 	                UUID.randomUUID(), 
@@ -127,7 +125,7 @@ class InvoiceTest {
     @Test
     public void shouldThrowExceptionWhenTryingToModifyItemsSet() {
         Invoice invoice = InvoiceTestDataBuilder.anInvoice().build();
-        Set<LineItem> items = invoice.getItems();
+        List<LineItem> items = invoice.getItems();
 
         Assertions.assertThatExceptionOfType(UnsupportedOperationException.class)
                 .isThrownBy(items::clear);
