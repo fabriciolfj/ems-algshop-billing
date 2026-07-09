@@ -6,9 +6,13 @@ import com.algaworks.algashop.billing.domain.model.invoice.payment.Payment;
 import com.algaworks.algashop.billing.domain.model.invoice.payment.PaymentGatewayService;
 import com.algaworks.algashop.billing.domain.model.invoice.payment.PaymentRequest;
 import com.algaworks.algashop.billing.infrastructure.payment.AlgaShopPaymentProperties;
+import com.algaworks.algashop.billing.presentation.BadGatewayException;
+import com.algaworks.algashop.billing.presentation.GatewayTimeoutException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
 
 import java.util.UUID;
 
@@ -17,20 +21,38 @@ import java.util.UUID;
 @ConditionalOnProperty(name = "algashop.integrations.payment.provider", havingValue = "FASTPAY")
 public class PaymentGatewayServiceFastpayImpl implements PaymentGatewayService {
 
-    private final FastpayPaymentApiClient fastpayPaymentApiClient;
+    private final FastpayPaymentApiClient fastpayPaymentAPIClient;
     private final CreditCardRepository creditCardRepository;
     private final AlgaShopPaymentProperties algaShopPaymentProperties;
 
+
     @Override
     public Payment capture(PaymentRequest request) {
-        final var input = convertInput(request);
-        final var response = fastpayPaymentApiClient.capure(input);
+        FastpayPaymentInput input = convertInput(request);
+        FastpayPaymentModel response;
+
+        try {
+            response = fastpayPaymentAPIClient.capture(input);
+        } catch (ResourceAccessException e) {
+            throw new GatewayTimeoutException("Fastpay API Timeout", e);
+        } catch (HttpClientErrorException e) {
+            throw new BadGatewayException("Fastpay API Bad Gateway", e);
+        }
+
         return convertToPayment(response);
     }
 
     @Override
     public Payment findByCode(String gatewayCode) {
-        final var response = fastpayPaymentApiClient.findById(gatewayCode);
+        FastpayPaymentModel response;
+        try {
+            response = fastpayPaymentAPIClient.findById(gatewayCode);
+        } catch (ResourceAccessException e) {
+            throw new GatewayTimeoutException("Fastpay API Timeout", e);
+        } catch (HttpClientErrorException e) {
+            throw new BadGatewayException("Fastpay API Bad Gateway", e);
+        }
+
         return convertToPayment(response);
     }
 

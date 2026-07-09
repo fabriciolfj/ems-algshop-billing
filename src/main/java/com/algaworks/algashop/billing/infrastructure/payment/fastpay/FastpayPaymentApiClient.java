@@ -12,7 +12,7 @@ import org.springframework.web.service.annotation.PutExchange;
 public interface FastpayPaymentApiClient {
 
     @PostExchange(contentType = MediaType.APPLICATION_JSON_VALUE)
-    FastpayPaymentModel capure(@RequestBody final FastpayPaymentInput input);
+    FastpayPaymentModel capture(@RequestBody final FastpayPaymentInput input);
 
     @GetExchange("/{paymentId}")
     FastpayPaymentModel findById(@PathVariable final String paymentId);
