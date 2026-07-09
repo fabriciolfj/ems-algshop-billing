@@ -6,6 +6,7 @@ import com.algaworks.algashop.billing.domain.model.invoice.*;
 import com.algaworks.algashop.billing.domain.model.invoice.payment.Payment;
 import com.algaworks.algashop.billing.domain.model.invoice.payment.PaymentGatewayService;
 import com.algaworks.algashop.billing.domain.model.invoice.payment.PaymentRequest;
+import com.algaworks.algashop.billing.domain.model.invoice.payment.PaymentStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -41,7 +42,7 @@ public class InvoiceManagementApplicationService {
 
     @Transactional
     public void processPayment(UUID invoiceId) {
-        Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(() -> new InvoiceNotFoundException());
+        Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(InvoiceNotFoundException::new);
         PaymentRequest paymentRequest = toPaymentRequest(invoice);
 
         Payment payment;
@@ -107,5 +108,12 @@ public class InvoiceManagementApplicationService {
         if (creditCardId != null && !creditCardRepository.existsById(creditCardId)) {
             throw new CreditCardNotFoundException();
         }
+    }
+
+    public void updatePaymentStatus(final UUID invoiceId, final PaymentStatus status) {
+        final Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(InvoiceNotFoundException::new);
+        invoice.updatePaymentStatus(status);
+        invoiceRepository.saveAndFlush(invoice);
+
     }
 }

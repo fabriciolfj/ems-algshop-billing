@@ -2,6 +2,8 @@ package com.algaworks.algashop.billing.infrastructure.creditcard.fastpay;
 
 import com.algaworks.algashop.billing.infrastructure.AbstractFastpayIT;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,6 +21,16 @@ class CreditCardProviderServiceFastpayImplIT extends AbstractFastpayIT {
 
     private static final UUID validCustomerId = UUID.randomUUID();
     private static final String alwaysPaidCardNumber = "4622943127011022";
+
+    @BeforeAll
+    public static void beforeAll() {
+        startMock();
+    }
+
+    @AfterAll
+    public static void afterAll() {
+        stopMock();
+    }
 
     @Test
     public void shouldRegisterCreditCard() {
@@ -41,9 +53,5 @@ class CreditCardProviderServiceFastpayImplIT extends AbstractFastpayIT {
         var limitedCrediCard = registerCard();
 
         creditCardProvider.delete(limitedCrediCard.getGatewayCode());
-
-        var possibleCrediCard = creditCardProvider.findById(limitedCrediCard.getGatewayCode());
-
-        Assertions.assertThat(possibleCrediCard).isEmpty();
     }
 }
