@@ -1,6 +1,5 @@
 package com.algaworks.algashop.billing.infrastructure.payment.fastpay;
 
-import com.algaworks.algashop.billing.infrastructure.creditcard.fastpay.FastpayCreditCardAPIClient;
 import com.algaworks.algashop.billing.infrastructure.payment.AlgaShopPaymentProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
