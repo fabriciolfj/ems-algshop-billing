@@ -1,7 +1,9 @@
 package com.algaworks.algashop.billing.infrastructure.configuration;
 
+import com.algaworks.algashop.billing.presentation.BadGatewayException;
 import org.springframework.cloud.circuitbreaker.retry.FrameworkRetryCircuitBreakerFactory;
 import org.springframework.cloud.client.circuitbreaker.Customizer;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.retry.RetryPolicy;
 
@@ -10,11 +12,15 @@ import java.time.Duration;
 @Configuration
 public class SpringCircuitBreakConfig {
 
+    public static final String FAST_API_CB = "fastpayCB";
+
+    @Bean
     public Customizer<FrameworkRetryCircuitBreakerFactory> circuitBreakerFactoryCustomizer() {
         final RetryPolicy policy = RetryPolicy
                 .builder()
                 .maxRetries(3)
                 .multiplier(2)
+                .includes(BadGatewayException.class)
                 .delay(Duration.ofSeconds(3))
                 .build();
 
@@ -24,7 +30,7 @@ public class SpringCircuitBreakConfig {
                             .retryPolicy(policy)
                             .resetTimeout(Duration.ofSeconds(25))
                             .openTimeout(Duration.ofSeconds(10))
-                            .build(), "faspayCB"
+                            .build(), FAST_API_CB
             );
         };
     }

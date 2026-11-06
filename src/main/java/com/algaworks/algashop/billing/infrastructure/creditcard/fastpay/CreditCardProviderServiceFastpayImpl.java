@@ -3,6 +3,7 @@ package com.algaworks.algashop.billing.infrastructure.creditcard.fastpay;
 import com.algaworks.algashop.billing.domain.model.creditcard.CreditCardProviderService;
 import com.algaworks.algashop.billing.domain.model.creditcard.LimitedCreditCard;
 import com.algaworks.algashop.billing.infrastructure.creditcard.fake.CreditCardProviderServiceFakeImpl;
+import com.algaworks.algashop.billing.presentation.BadGatewayException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
@@ -14,6 +15,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.algaworks.algashop.billing.infrastructure.configuration.SpringCircuitBreakConfig.FAST_API_CB;
+
 @Slf4j
 @Service
 @ConditionalOnProperty(name = "algashop.integrations.payment.provider", havingValue = "FASTPAY")
@@ -21,12 +24,11 @@ public class CreditCardProviderServiceFastpayImpl implements CreditCardProviderS
 
     private final FastpayCreditCardAPIClient fastpayCreditCardAPIClient;
     private final CircuitBreaker fastpayCB;
-    private final CreditCardProviderServiceFakeImpl fake;
+    private final CreditCardProviderServiceFakeImpl fake = new CreditCardProviderServiceFakeImpl();
 
-    public CreditCardProviderServiceFastpayImpl(FastpayCreditCardAPIClient fastpayCreditCardAPIClient, CircuitBreakerFactory fastpayCB, CreditCardProviderServiceFakeImpl fake) {
+    public CreditCardProviderServiceFastpayImpl(FastpayCreditCardAPIClient fastpayCreditCardAPIClient, CircuitBreakerFactory fastpayCB) {
         this.fastpayCreditCardAPIClient = fastpayCreditCardAPIClient;
-        this.fastpayCB = fastpayCB.create("fastpayCB");
-        this.fake = fake;
+        this.fastpayCB = fastpayCB.create(FAST_API_CB);
     }
 
     @Override
@@ -55,7 +57,7 @@ public class CreditCardProviderServiceFastpayImpl implements CreditCardProviderS
             return toLimitedCreditCard(response);
         } catch (NoFallbackAvailableException e) {
             log.error("failt process payment, cause {}", e.getCause());
-            throw e;
+            throw new BadGatewayException("fail request algapay", e.getCause());
         }
     }
 
